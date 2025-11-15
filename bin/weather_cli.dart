@@ -5,6 +5,7 @@ import 'package:weather_cli/location_provider.dart';
 
 void main(List<String> arguments) async {
   var locationProvider = LocationProvider();
+  locationProvider.selectLocation("Sydney");
   var forecastProvider = ForecastProvider(locationProvider);
 
   bool succeeded = await forecastProvider.fetchHourlyForecast();

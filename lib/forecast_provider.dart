@@ -14,9 +14,10 @@ class ForecastProvider {
     var lat = _locationProvider.selectedLocation.latitude;
     var lon = _locationProvider.selectedLocation.longitude;
 
-    // 'https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,precipitation,cloud_cover&forecast_days=1';
+    // 'https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,precipitation,cloud_cover&timezone=auto&forecast_days=1';
     final url =
-        "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&hourly=temperature_2m,precipitation,cloud_cover&forecast_days=1";
+        "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&hourly=temperature_2m,precipitation,cloud_cover"
+        "&timezone=auto&forecast_days=1";
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode != 200) {
