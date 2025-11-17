@@ -17,7 +17,7 @@ class ForecastProvider {
     // 'https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,precipitation,cloud_cover&timezone=auto&forecast_days=1';
     final url =
         "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&hourly=temperature_2m,precipitation,cloud_cover"
-        "&timezone=auto&forecast_days=1";
+        "&timezone=auto&forecast_days=2";
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode != 200) {
@@ -28,6 +28,7 @@ class ForecastProvider {
     }
 
     final data = jsonDecode(response.body);
+    int locationUtcOffsetInSeconds = data["utc_offset_seconds"];
 
     List<String> times = [];
     List<double?> temps = [];
@@ -38,14 +39,22 @@ class ForecastProvider {
     temps = List<double?>.from(data['hourly']['temperature_2m']);
     precipAmounts = List<double?>.from(data['hourly']['precipitation']);
     cloudCovers = List<int?>.from(data['hourly']['cloud_cover']);
+    var nowInUtc = DateTime.now().toUtc();
 
     for (int i = 0; i < times.length; i++) {
       final localTime = DateTime.parse(times[i]);
-      var data = WeatherData(localTime);
-      data.temp = temps[i];
-      data.precipAmount = precipAmounts[i];
-      data.cloudCover = cloudCovers[i];
-      hourlyForecast.add(data);
+      final localTimeParsedAsUtc = DateTime.parse("${times[i]}Z");
+      var localTimeInUtc = localTimeParsedAsUtc.add(
+        Duration(seconds: -locationUtcOffsetInSeconds),
+      );
+
+      if (localTimeInUtc.isAfter(nowInUtc)) {
+        var data = WeatherData(localTime);
+        data.temp = temps[i];
+        data.precipAmount = precipAmounts[i];
+        data.cloudCover = cloudCovers[i];
+        hourlyForecast.add(data);
+      }
     }
     return true;
   }
