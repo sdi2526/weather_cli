@@ -6,7 +6,7 @@ void main() {
     var locationProvider = LocationProvider();
     var names = locationProvider.getLocationNames();
 
-    expect(names.length, 4);
+    expect(names.length, 5);
   });
 
   test('selectLocation', () {
